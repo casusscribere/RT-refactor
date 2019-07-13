@@ -1,8 +1,14 @@
-class Check{
-    constructor(attribute,  modifier) {
+/**Author: Argagarg
+ * Source: https://github.com/Argagarg/RT2sheet
+ * About: This module characterizes the basic 40k check
+ **/
+export class Check{
+    constructor(attribute,  modifier, name='generic check') {
         this.attribute  = attribute;
         this.modifier   = modifier;
         this.roll       = randomInteger(100);
+        this.name       = name;
+        this.diff       = modifier;
     }
 
     //methods
@@ -18,6 +24,13 @@ class Check{
         this.dos = dos;
     }
 
+    bindmodifier(){
+        if (this.modifier > 60) this.modifier = 60;
+        else if (this.modifier <-60) this.modifier = -60;
+    }
+
+    
+
     //getters
     get attribute(){
         return this._attribute;
@@ -30,6 +43,12 @@ class Check{
     }
     get dos(){
         return this._dos;
+    }
+    get name(){
+        return this._name;
+    }
+    get diff(){
+        return this._diff;
     }
 
     //setters
@@ -52,5 +71,35 @@ class Check{
         if (typeof value === 'undefined' || Number.isInteger(parseInt(value))==false) throw "invalid dos";
         else if(parseInt(value)< -20 || parseInt(value)> 20) throw "dos out of range";
         else this._dos = parseInt(value);
+    }
+    set name(value){
+        this._name = value;
+    }
+    set diff(value){
+        if(value==0)
+        {
+            this._diff="Challenging"
+        } else if (value == 30){
+            this._diff="Easy"
+        } else if (value == 20){
+            this._diff="Routine"
+        } else if (value == 10){
+            this._diff="Ordinary"
+        } else if (value == -10){
+            this._diff="Difficult"
+        } else if (value == -20){
+            this._diff="Hard"
+        } else if (value == -30){
+            this._diff="Very Hard"
+        } else if (value == -40){
+            this._diff="Arduous"
+        } else if (value == -50){
+            this._diff="Punishing"
+        } else if (value == -60){
+            this._diff="Hellish"
+        }
+        else{
+            this._diff='Other';
+        }
     }
 }

@@ -1,11 +1,13 @@
 /**Author: Argagarg
  * Source: https://github.com/Argagarg/RT2sheet
- * About: This script serves as a wrapper for the 40k scripts: it captures the !skill40k, !ranged40k, !melee40k, and !psy40k commands
+ * About: This script serves as a wrapper for the 40k scripts: it captures the requisite commands (check, skillcheck, melee, ranged, psy) and passes them to the powercard wrapper script
  **/
+import {makecheck} from "./fortyk.js";
+import {pcprep} from "./pcprep.js";
+var listener = listener || (function() {
+    
 
-var listener = listener || (function () {
-
-    handleInput = function (msg_orig) {
+    function handleInput(msg_orig) {
 
         var msg = _.clone(msg_orig),
             args, cmds, ids = [],
@@ -19,23 +21,20 @@ var listener = listener || (function () {
                 order: []
             };
         try {
-            var msgTxt = msg.content;
-            var player_obj = getObj("player", msg.playerid);
-
             if (msg.type !== "api") return;
             args = msg.content;
             let cmdName = args.split(' ').shift();
             if(cmdName !== "!40k") return;
             args = args.split("-");
             args.shift();
-            cmdMode = this.trimString(args.shift())
-            log(args);
+            let cmdMode = trimString(args.shift())
+            let token = args.shift();
             switch (cmdMode) {
                 case 'check':
-                    log("entered check");
-                    if(args.length < 2) throw "invalid number of parameters for 40k Check";
+                    if(args.length < 2) throw "too few arguments for !40k -check"
                     else{
-                        let output = fortykNamespace.check(args[0], args[1]);
+                        let output = makecheck(args[0], args[1]);
+                        pcprep(output, token,'normal', msg);
                         log(output);
                     }
                 break;
@@ -48,7 +47,7 @@ var listener = listener || (function () {
                 `<div style="border:1px solid black; background-color: #ffeeee; padding: .2em; border-radius:.4em;" >` +
                 `<div>There was an error while trying to run your command:</div>` +
                 `<div style="margin: .1em 1em 1em 1em;"><code>${msg_orig.content}</code></div>` +
-                `<div>Please <a class="showtip tipsy" title="The Aaron's profile on Roll20." style="color:blue; text-decoration: underline;" href="https://app.roll20.net/users/104025/the-aaron">send me this information</a> so I can make sure this doesn't happen again (triple click for easy select in most browsers.):</div>` +
+                `<div>Please <a class="showtip tipsy" title="kirk lundblade's site" style="color:blue; text-decoration: underline;" href="http://kirklundblade.com">send me this information</a> so I can make sure this doesn't happen again (triple click for easy select in most browsers.):</div>` +
                 `<div style="font-size: .6em; line-height: 1em;margin:.1em .1em .1em 1em; padding: .1em .3em; color: #666666; border: 1px solid #999999; border-radius: .2em; background-color: white;">` +
                 JSON.stringify({
                     msg: msg_orig,
@@ -60,26 +59,19 @@ var listener = listener || (function () {
         }
     }
 
-    registerEventHandlers = function () {
+    function registerEventHandlers() {
         on('chat:message', handleInput);
     };
 
-    trimString = function (src) {
+    function trimString(src) {
         return src.replace(/^\s+|\s+$/g, '');
     };
 
     return {
-        RegisterEventHandlers: registerEventHandlers
+        RegisterEventHandlers: registerEventHandlers,
+        handleInput: handleInput
     };
 }());
-
-
-
-
-
-
-
-
 
 on("ready", function () {
     'use strict';
