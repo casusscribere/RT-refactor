@@ -3,7 +3,7 @@
  * About: This module characterizes the basic 40k check
  **/
 export class Check{
-    constructor(attribute,  modifier, name='generic check') {
+    constructor(attribute,  modifier, name='Generic') {
         this.attribute  = attribute;
         this.modifier   = modifier;
         this.roll       = randomInteger(100);

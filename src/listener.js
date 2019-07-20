@@ -1,8 +1,8 @@
 /**Author: Argagarg
  * Source: https://github.com/Argagarg/RT2sheet
- * About: This script serves as a wrapper for the 40k scripts: it captures the requisite commands (check, skillcheck, melee, ranged, psy) and passes them to the powercard wrapper script
+ * About: This script serves as a wrapper for the 40k scripts: it captures the basic commands from macros/charsheets and calls the requisite 40k entry points
  **/
-import {makecheck} from "./fortyk.js";
+import {makecheck, makeskillcheck} from "./fortyk.js";
 import {pcprep} from "./pcprep.js";
 var listener = listener || (function() {
     
@@ -25,15 +25,24 @@ var listener = listener || (function() {
             args = msg.content;
             let cmdName = args.split(' ').shift();
             if(cmdName !== "!40k") return;
+            args = trimString(args).replace(/\s/g, '');
             args = args.split("-");
             args.shift();
             let cmdMode = trimString(args.shift())
             let token = args.shift();
             switch (cmdMode) {
                 case 'check':
-                    if(args.length < 2) throw "too few arguments for !40k -check"
+                    if(args.length < 2) throw "too few arguments for !40k -check";
                     else{
-                        let output = makecheck(args[0], args[1]);
+                        let output = makecheck(args);
+                        pcprep(output, token,'normal', msg);
+                        log(output);
+                    }
+                break;
+                case 'skill':
+                    if(args.length < 2) throw "too few arguments for !40k -skill";
+                    else{
+                        let output = makeskillcheck(args);
                         pcprep(output, token,'normal', msg);
                         log(output);
                     }
